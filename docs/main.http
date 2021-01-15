@@ -1,0 +1,29 @@
+@HOST = http://127.0.0.1:8080
+@TOKEN = Bearer xxx
+@CONTENT = application/json
+
+###
+GET {{HOST}}/health-check HTTP/1.1
+Authorization: {{TOKEN}}
+
+###
+POST {{HOST}} HTTP/1.1
+Authorization: {{TOKEN}}
+Content-Type: {{CONTENT}}
+
+{
+    "foo": "bar"
+}
+
+###
+PUT {{HOST}}/id/1 HTTP/1.1
+Authorization: {{TOKEN}}
+Content-Type: {{CONTENT}}
+
+{
+    "foo": "bar"
+}
+
+###
+DELETE {{HOST}}/id/1 HTTP/1.1
+Authorization: {{TOKEN}}
