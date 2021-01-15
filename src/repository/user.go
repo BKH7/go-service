@@ -18,12 +18,13 @@ func NewUserRepository(conn *gorm.DB) domain.UserRepository {
 	return &userRepository{conn}
 }
 
-func (r *userRepository) GetByID(ctx context.Context, id string, user *model.User) error {
-	if err := r.conn.WithContext(ctx).Where("userId = ?", id).First(user).Error; err != nil {
+func (r *userRepository) GetByID(ctx context.Context, id string) (model.User, error) {
+	var user model.User
+	if err := r.conn.WithContext(ctx).Table("users").Where(`userId = ?`, id).First(&user).Error; err != nil {
 		logrus.Error(err)
-		return err
+		return model.User{}, err
 	}
-	return nil
+	return user, nil
 }
 
 func (r *userRepository) GetDupplicate(ctx context.Context, user *model.User) bool {
@@ -45,18 +46,16 @@ func (r *userRepository) IsExist(ctx context.Context, id string) bool {
 	return false
 }
 
-func (r *userRepository) Fetch(ctx context.Context, user *[]model.User) error {
+func (r *userRepository) Fetch(ctx context.Context) ([]model.User, error) {
+	var user []model.User
 	if err := r.conn.WithContext(ctx).Find(user).Error; err != nil {
 		logrus.Error(err)
-		return err
+		return []model.User{}, err
 	}
-	return nil
+	return user, nil
 }
 
 func (r *userRepository) Store(ctx context.Context, user *model.User) error {
-	// if dupp := r.GetDupplicate(ctx, user); dupp == true {
-	// 	return errors.New(domain.ErrConflict.Error())
-	// }
 	if err := r.conn.WithContext(ctx).Create(user).Error; err != nil {
 		logrus.Error(err)
 		return err

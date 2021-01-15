@@ -13,4 +13,8 @@ var (
 	ErrConflict = errors.New("Your Item already exist")
 	// ErrBadParamInput = 400
 	ErrBadParamInput = errors.New("Given Param is not valid")
+	// ErrUnauthorized = 401
+	ErrUnauthorized = errors.New("Unauthorized")
+	// ErrForbidden = 403
+	ErrForbidden = errors.New("Forbidden")
 )

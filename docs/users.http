@@ -1,0 +1,36 @@
+@HOST = http://127.0.0.1:8080/users
+@TOKEN = Bearer xxx
+@CONTENT = application/json
+
+###
+GET {{HOST}} HTTP/1.1
+Authorization: {{TOKEN}}
+
+###
+GET {{HOST}}/d2eebadb-e592-46ae-9278-40ac684dca3c HTTP/1.1
+Authorization: {{TOKEN}}
+
+###
+POST {{HOST}} HTTP/1.1
+Authorization: {{TOKEN}}
+Content-Type: {{CONTENT}}
+
+{
+    "username": "admin",
+    "password": "passwd",
+    "email": "mail@example.com",
+    "avatar": "https://res.cloudinary.com/daily-now/image/upload/f_auto/v1610024471/avatars/090365eebfb942898a18f8d8cd0eb055"
+}
+
+###
+PUT {{HOST}}/id/1 HTTP/1.1
+Authorization: {{TOKEN}}
+Content-Type: {{CONTENT}}
+
+{
+    "foo": "bar"
+}
+
+###
+DELETE {{HOST}}/id/1 HTTP/1.1
+Authorization: {{TOKEN}}

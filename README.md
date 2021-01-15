@@ -33,9 +33,9 @@ $ make test
 Here is the steps to run it with `make`
 
 ```bash
-#move to directory
-$ cd go-service
+#install dependenci
+$ make install
 
-# Run the application default localhost:8888
-$ make run
+# Run the application default localhost:8080
+$ make
 ```

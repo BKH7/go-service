@@ -8,19 +8,19 @@ import (
 
 // UserUseCase ...
 type UserUseCase interface {
-	GetByID(ctx context.Context, t *model.User, id string) error
-	// Fetch() (t []model.User, err error)
-	// Store(t *model.User) error
-	// Update(t *model.User, id string) error
+	GetByID(ctx context.Context, id string) (model.User, error)
+	// Fetch() (user []model.User, err error)
+	Store(ctx context.Context, user *model.User) error
+	// Update(user *model.User, id string) error
 	// Delete(id string) error
 }
 
 // UserRepository ...
 type UserRepository interface {
-	GetByID(ctx context.Context, id string, user *model.User) error
+	GetByID(ctx context.Context, id string) (model.User, error)
 	GetDupplicate(ctx context.Context, user *model.User) bool
 	IsExist(ctx context.Context, id string) bool
-	Fetch(ctx context.Context, user *[]model.User) error
+	Fetch(ctx context.Context) ([]model.User, error)
 	Store(ctx context.Context, user *model.User) error
 	Update(ctx context.Context, id string, user *model.User) error
 	Delete(ctx context.Context, id string) error

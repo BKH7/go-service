@@ -18,13 +18,18 @@ func NewUserUseCase(userRepo domain.UserRepository, timeout time.Duration) domai
 	return &userUseCase{userRepo, timeout}
 }
 
-func (r *userUseCase) GetByID(ctx context.Context, user *model.User, id string) error {
+func (r *userUseCase) GetByID(ctx context.Context, id string) (model.User, error) {
+	var user model.User
 	ctx, cancel := context.WithTimeout(ctx, r.timeout)
+
 	defer cancel()
-	if err := r.userRepo.GetByID(ctx, id, user); err != nil {
-		return err
+
+	user, err := r.userRepo.GetByID(ctx, id)
+	if err != nil {
+		return model.User{}, err
 	}
-	return nil
+
+	return user, nil
 }
 
 // func (r *userUseCase) GetAllUser() ([]model.User, error) {
@@ -36,12 +41,14 @@ func (r *userUseCase) GetByID(ctx context.Context, user *model.User, id string) 
 // 	return users, nil
 // }
 
-// func (r *userUseCase) CreateUser(user *model.User) error {
-// 	if err := r.userRepo.CreateUser(user); err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
+func (r *userUseCase) Store(ctx context.Context, user *model.User) error {
+	ctx, cancel := context.WithTimeout(ctx, r.timeout)
+	defer cancel()
+	if err := r.userRepo.Store(ctx, user); err != nil {
+		return err
+	}
+	return nil
+}
 
 // func (r *userUseCase) UpdateUser(user *model.User, id string) error {
 // 	if err := r.userRepo.UpdateUser(user, id); err != nil {
