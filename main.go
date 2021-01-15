@@ -5,14 +5,19 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"time"
 
 	"github.com/labstack/echo"
 	"github.com/spf13/viper"
+	"gitlab.com/bunlert274/go-service/src/delivery"
 	"gitlab.com/bunlert274/go-service/src/middleware"
 	"gitlab.com/bunlert274/go-service/src/migrate"
+	"gitlab.com/bunlert274/go-service/src/repository"
+	"gitlab.com/bunlert274/go-service/src/usecase"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 func init() {
@@ -45,8 +50,15 @@ func main() {
 
 	e.Pre(mw.RemoveTrailingSlash())
 	e.Use(mw.CORS)
-
-	sqlConnection, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	newLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+		logger.Config{
+			SlowThreshold: time.Second,   // Slow SQL threshold
+			LogLevel:      logger.Silent, // Log level
+			Colorful:      false,         // Disable color
+		},
+	)
+	sqlConnection, err := gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: newLogger})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -60,7 +72,11 @@ func main() {
 		e.Close()
 	}()
 
-	_ = time.Duration(viper.GetInt("context.timeout")) * time.Second
+	timeout := time.Duration(viper.GetInt("context.timeout")) * time.Second
+
+	userRepository := repository.NewUserRepository(sqlConnection)
+	userUseCase := usecase.NewUserUseCase(userRepository, timeout)
+	delivery.NewUserHandle(e, userUseCase)
 
 	e.GET("/health-check", func(c echo.Context) error {
 		// should be return from check in service (3th party, connection)

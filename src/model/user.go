@@ -1,8 +1,10 @@
 package model
 
 import (
+	"crypto/sha256"
+	"fmt"
+
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -13,7 +15,7 @@ type User struct {
 	Password  string `gorm:"column:password" json:"password"`
 	Email     string `gorm:"column:email;unique" json:"email"`
 	Avatar    string `gorm:"column:avatar" json:"avatar"`
-	IsDeleted bool   `gorm:"default:false;column:isDeleted" json:"isDeleted"`
+	IsDeleted bool   `gorm:"column:isDeleted;default:false" json:"isDeleted"`
 	CreatedAt int64  `gorm:"column:createdAt;autoCreateTime:milli" json:"createdAt"`
 	UpdatedAt int64  `gorm:"column:updatedAt;autoUpdateTime:milli" json:"updatedAt"`
 }
@@ -31,6 +33,5 @@ func (m *User) BeforeCreate(db *gorm.DB) error {
 }
 
 func makePassword(passwd string) string {
-	bytes, _ := bcrypt.GenerateFromPassword([]byte(passwd), bcrypt.DefaultCost)
-	return string(bytes)
+	return fmt.Sprintf("%x", sha256.Sum256([]byte(passwd)))
 }

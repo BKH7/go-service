@@ -1,8 +1,11 @@
 package migrate
 
-import "gorm.io/gorm"
+import (
+	"gitlab.com/bunlert274/go-service/src/model"
+	"gorm.io/gorm"
+)
 
 // Migrate database
 func Migrate(db *gorm.DB) {
-	db.AutoMigrate()
+	db.AutoMigrate(&model.User{})
 }

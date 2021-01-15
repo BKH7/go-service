@@ -1,6 +1,9 @@
 BINARY=goapp
+run:
+	go run main.go
+
 install:
-	go mod download
+	go mod download && go mod tidy
 
 test: 
 	go test -v -cover -covermode=atomic ./...

@@ -14,19 +14,20 @@ type UserHandle struct {
 }
 
 // NewUserHandle ...
-func NewUserHandle(userUseCase domain.UserUseCase) *UserHandle {
-	return &UserHandle{userUseCase}
+func NewUserHandle(e *echo.Echo, userUseCase domain.UserUseCase) {
+	h := &UserHandle{userUseCase}
+	e.GET("/users", h.GetByID)
 }
 
-// GetUser ...
-func (h *UserHandle) GetUser(c echo.Context) error {
-	var user model.User
+// GetByID ...
+func (h *UserHandle) GetByID(c echo.Context) error {
+	var user *model.User
+	ctx := c.Request().Context()
 	id := c.Param("id")
 
-	err := h.userUseCase.GetUser(&user, id)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, domain.ErrNotFound.Error())
+	if err := h.userUseCase.GetByID(ctx, user, id); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.ErrInternalServerError)
 	}
-	return c.JSON(http.StatusOK, user)
 
+	return c.JSON(http.StatusOK, user)
 }
